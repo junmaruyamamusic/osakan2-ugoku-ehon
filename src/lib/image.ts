@@ -31,11 +31,20 @@ export async function createCompositeImage(
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(0, 0, outputSize, outputSize);
 
-    ctx.clearRect(margin, margin, outputSize - margin * 2, outputSize - margin * 2);
+    const radius = outputSize / 2 - margin;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(outputSize / 2, outputSize / 2, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
 
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 8;
-    ctx.strokeRect(margin + 4, margin + 4, outputSize - (margin + 4) * 2, outputSize - (margin + 4) * 2);
+    ctx.beginPath();
+    ctx.arc(outputSize / 2, outputSize / 2, radius - 4, 0, Math.PI * 2);
+    ctx.stroke();
 
     return canvas.toDataURL();
   } finally {
