@@ -5,7 +5,6 @@ import { StoryViewer } from '@/components/StoryViewer'
 import { ImageUpload } from '@/components/ImageUpload'
 import { useStore } from '@/store/useStore'
 import type { Story } from '@/types'
-import { createCompositeImage } from '@/lib/image'
 
 function generateSampleStory(): Story {
   const id = Date.now().toString()
@@ -43,7 +42,6 @@ export default function HomePage() {
   const [keywords, setKeywords] = useState('')
   const [isSummarizing, setIsSummarizing] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
-  const [croppedUrl, setCroppedUrl] = useState<string | null>(null)
   const [generatedStory, setGeneratedStory] = useState<Story | null>(null)
   const [imageProgress, setImageProgress] = useState(0)
   const [imageTotal, setImageTotal] = useState(0)
@@ -175,16 +173,6 @@ export default function HomePage() {
       pages
     }
 
-    let preview: string | null = null
-    if (uploadedImages.child) {
-      try {
-        preview = await createCompositeImage(uploadedImages.child)
-        setCroppedUrl(preview)
-      } catch (e) {
-        console.error('crop error', e)
-      }
-    }
-
     setGeneratedStory(story)
     setIsGenerating(false)
   }, [uploadedImages.child, storyText, setIsGenerating, addLog])
@@ -248,21 +236,15 @@ export default function HomePage() {
         </button>
       </div>
 
-      {croppedUrl && (
+
+      {generatedStory && (
         <div className="mt-5 text-center">
-          <img
-            src={croppedUrl}
-            alt="preview"
-            className="mx-auto mb-3 h-40 w-40 object-contain"
-          />
-          {generatedStory && (
-            <button
-              onClick={() => setCurrentStory(generatedStory)}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white"
-            >
-              絵本を見る
-            </button>
-          )}
+          <button
+            onClick={() => setCurrentStory(generatedStory)}
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white"
+          >
+            絵本を見る
+          </button>
         </div>
       )}
 

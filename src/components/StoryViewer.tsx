@@ -8,7 +8,6 @@ import { Progress } from '@/components/ui/progress'
 import { StoryPage } from '@/components/StoryPage'
 import { useStore } from '@/store/useStore'
 import { cn } from '@/lib/utils'
-import { createCompositeImage } from '@/lib/image'
 
 interface StoryViewerProps {
   className?: string
@@ -24,23 +23,6 @@ export function StoryViewer({ className }: StoryViewerProps) {
     uploadedImages
   } = useStore()
 
-  const [childImageUrl, setChildImageUrl] = React.useState<string>()
-
-  React.useEffect(() => {
-    let cancelled = false
-    if (!uploadedImages.child) {
-      setChildImageUrl(undefined)
-      return
-    }
-    createCompositeImage(uploadedImages.child)
-      .then((url) => {
-        if (!cancelled) setChildImageUrl(url)
-      })
-      .catch(() => setChildImageUrl(undefined))
-    return () => {
-      cancelled = true
-    }
-  }, [uploadedImages.child])
 
   if (!currentStory) {
     return (
@@ -103,7 +85,6 @@ export function StoryViewer({ className }: StoryViewerProps) {
             page={currentStory.pages[currentPageIndex]}
             isActive={true}
             className="absolute inset-0"
-            childImageUrl={childImageUrl}
           />
         </AnimatePresence>
       </div>
