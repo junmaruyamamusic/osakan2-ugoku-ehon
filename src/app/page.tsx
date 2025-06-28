@@ -179,17 +179,15 @@ export default function HomePage() {
   }
 
   return (
-    <div
-      style={{ padding: '20px', backgroundColor: '#f0f0f0', minHeight: '100vh' }}
-    >
-      <h1 style={{ color: '#333', fontSize: '32px', marginBottom: '20px' }}>
-        動く絵本アプリ
+    <div className="flex min-h-screen flex-col items-center bg-gradient-to-br from-pink-100 via-yellow-100 to-purple-100 p-6">
+      <h1 className="mb-4 text-4xl font-bold text-pink-600 font-[var(--font-rounded)]">
+        わくわくえほんパラダイス
       </h1>
-      <p style={{ color: '#666', fontSize: '18px', marginBottom: '20px' }}>
-        子ども向けの動きのあるイラスト付き絵本をWebアプリとして提供するサービスです。
+      <p className="mb-6 text-center text-lg text-pink-700">
+        かわいいイラストと楽しいアニメーションでオリジナル絵本を作ろう！
       </p>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div className="mb-4 w-full max-w-md">
         <ImageUpload type="child" />
       </div>
 
@@ -198,27 +196,12 @@ export default function HomePage() {
         value={keywords}
         onChange={(e) => setKeywords(e.target.value)}
         placeholder="キーワードを入力"
-        style={{
-          width: '100%',
-          padding: '8px',
-          marginBottom: '12px',
-          borderRadius: '6px'
-        }}
+        className="mb-3 w-full max-w-md rounded-lg border p-2"
       />
       <button
         onClick={handleSummarize}
         disabled={isSummarizing}
-        style={{
-          backgroundColor: '#34D399',
-          color: 'white',
-          padding: '8px 16px',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '14px',
-          cursor: 'pointer',
-          opacity: isSummarizing ? 0.6 : 1,
-          marginBottom: '20px'
-        }}
+        className="mb-4 rounded-md bg-emerald-400 px-4 py-2 text-sm text-white disabled:opacity-60"
       >
         {isSummarizing ? '生成中...' : 'あらすじ生成'}
       </button>
@@ -228,72 +211,37 @@ export default function HomePage() {
         onChange={(e) => setStoryText(e.target.value)}
         rows={1}
         placeholder="1行の物語を入力してください"
-        style={{
-          width: '100%',
-          padding: '8px',
-          marginBottom: '20px',
-          borderRadius: '6px'
-        }}
+        className="mb-4 w-full max-w-md rounded-lg border p-2"
       />
 
       <button
         onClick={handleGenerate}
         disabled={isGenerating}
-        style={{
-          backgroundColor: '#8B5CF6',
-          color: 'white',
-          padding: '12px 24px',
-          border: 'none',
-          borderRadius: '8px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          opacity: isGenerating ? 0.6 : 1
-        }}
+        className="mb-6 rounded-lg bg-purple-500 px-6 py-3 text-lg text-white disabled:opacity-60"
       >
         {isGenerating ? '生成中...' : '絵本を生成'}
       </button>
 
-      <div style={{ marginTop: '40px' }}>
+      <div className="mb-8">
         <button
           onClick={handleCreate}
-          style={{
-            backgroundColor: '#aaa',
-            color: 'white',
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '14px',
-            cursor: 'pointer'
-          }}
+          className="rounded-md bg-gray-400 px-4 py-2 text-sm text-white"
         >
           サンプルを表示
         </button>
       </div>
 
       {croppedUrl && (
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <div className="mt-5 text-center">
           <img
             src={croppedUrl}
             alt="preview"
-            style={{
-              width: '200px',
-              height: '200px',
-              objectFit: 'contain',
-              marginBottom: '12px'
-            }}
+            className="mx-auto mb-3 h-40 w-40 object-contain"
           />
           {generatedStory && (
             <button
               onClick={() => setCurrentStory(generatedStory)}
-              style={{
-                backgroundColor: '#2563EB',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '14px',
-                cursor: 'pointer'
-              }}
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white"
             >
               絵本を見る
             </button>
@@ -302,19 +250,8 @@ export default function HomePage() {
       )}
 
       {logs.length > 0 && (
-        <div
-          style={{
-            marginTop: '20px',
-            backgroundColor: '#f9f9f9',
-            border: '1px solid #ddd',
-            borderRadius: '6px',
-            padding: '10px',
-            maxHeight: '200px',
-            overflowY: 'auto',
-            fontSize: '12px'
-          }}
-        >
-          <pre style={{ whiteSpace: 'pre-wrap' }}>{logs.join('\n')}</pre>
+        <div className="mt-5 max-h-52 overflow-y-auto rounded-md border bg-white/60 p-3 text-xs">
+          <pre className="whitespace-pre-wrap">{logs.join('\n')}</pre>
         </div>
       )}
     </div>
