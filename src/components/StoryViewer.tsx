@@ -24,19 +24,19 @@ export function StoryViewer({ className }: StoryViewerProps) {
     uploadedImages
   } = useStore()
 
-  const [overlayImageUrl, setOverlayImageUrl] = React.useState<string>()
+  const [childImageUrl, setChildImageUrl] = React.useState<string>()
 
   React.useEffect(() => {
     let cancelled = false
     if (!uploadedImages.child) {
-      setOverlayImageUrl(undefined)
+      setChildImageUrl(undefined)
       return
     }
     createCompositeImage(uploadedImages.child)
       .then((url) => {
-        if (!cancelled) setOverlayImageUrl(url)
+        if (!cancelled) setChildImageUrl(url)
       })
-      .catch(() => setOverlayImageUrl(undefined))
+      .catch(() => setChildImageUrl(undefined))
     return () => {
       cancelled = true
     }
@@ -103,7 +103,7 @@ export function StoryViewer({ className }: StoryViewerProps) {
             page={currentStory.pages[currentPageIndex]}
             isActive={true}
             className="absolute inset-0"
-            overlayImageUrl={overlayImageUrl}
+            childImageUrl={childImageUrl}
           />
         </AnimatePresence>
       </div>
