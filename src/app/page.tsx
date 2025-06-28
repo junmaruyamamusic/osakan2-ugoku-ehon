@@ -5,6 +5,7 @@ import { StoryViewer } from '@/components/StoryViewer'
 import { ImageUpload } from '@/components/ImageUpload'
 import { useStore } from '@/store/useStore'
 import type { Story } from '@/types'
+import { createCompositeImage } from '@/lib/image'
 
 function generateSampleStory(): Story {
   const id = Date.now().toString()
@@ -36,32 +37,6 @@ function generateSampleStory(): Story {
   }
 }
 
-function cropImageToCircle(url: string, diameter = 512): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => {
-      const size = Math.min(img.width, img.height, diameter)
-      const canvas = document.createElement('canvas')
-      canvas.width = size
-      canvas.height = size
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        reject(new Error('canvas not supported'))
-        return
-      }
-      ctx.beginPath()
-      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
-      ctx.clip()
-      const sx = (img.width - size) / 2
-      const sy = (img.height - size) / 2
-      ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size)
-      resolve(canvas.toDataURL())
-    }
-    img.onerror = (e) => reject(e)
-    img.src = url
-  })
-}
 
 export default function HomePage() {
   const [storyText, setStoryText] = useState('')
@@ -186,9 +161,9 @@ export default function HomePage() {
     }
 
     let preview: string | null = null
-    if (urls[0]) {
+    if (uploadedImages.child) {
       try {
-        preview = await cropImageToCircle(urls[0])
+        preview = await createCompositeImage(uploadedImages.child)
         setCroppedUrl(preview)
       } catch (e) {
         console.error('crop error', e)
@@ -303,8 +278,7 @@ export default function HomePage() {
             style={{
               width: '200px',
               height: '200px',
-              borderRadius: '50%',
-              objectFit: 'cover',
+              objectFit: 'contain',
               marginBottom: '12px'
             }}
           />

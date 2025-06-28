@@ -99,7 +99,7 @@ export function StoryPage({ page, isActive, className, overlayImageUrl }: StoryP
               <motion.img
                 src={overlayImageUrl}
                 alt="overlay"
-                className="absolute inset-0 m-auto w-1/2 h-1/2 object-cover"
+                className="absolute inset-0 m-auto w-full h-full object-contain pointer-events-none"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
