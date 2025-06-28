@@ -19,8 +19,7 @@ export function StoryViewer({ className }: StoryViewerProps) {
     currentPageIndex,
     nextPage,
     previousPage,
-    setCurrentStory,
-    uploadedImages
+    setCurrentStory
   } = useStore()
 
 
