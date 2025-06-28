@@ -17,7 +17,12 @@ export async function POST(req: NextRequest) {
 
   const openai = new OpenAI({ apiKey })
 
-  const prompt = `${story}\nIllustrate this scene for a children's picture book. The main character should resemble the uploaded child photo. Place the protagonist's face at the center of the image.`
+  const prompt = `<IMAGE> \u2192 Transform the input image into a hand-painted Studio Ghibli-style illustration for a children's picture book scene.\n` +
+    `\u2022 Use a soft pastel color palette and watercolor-like textures\n` +
+    `\u2022 Warm, natural lighting with gentle atmospheric haze\n` +
+    `\u2022 Painterly brush strokes, delicate gradients, and subtle film grain\n` +
+    `${story}\n` +
+    `The main character should resemble the uploaded child photo. Place the protagonist's face at the center of the image.`
 
   try {
     const res = await openai.images.generate({
