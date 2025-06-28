@@ -4,12 +4,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { StoryPage as StoryPageType, AnimationType } from '@/types'
 import { cn } from '@/lib/utils'
+import { createDalleOverlay } from '@/lib/image'
 
 interface StoryPageProps {
   page: StoryPageType
   isActive: boolean
   className?: string
-  overlayImageUrl?: string
+  childImageUrl?: string
 }
 
 const animationVariants = {
@@ -45,9 +46,27 @@ const animationVariants = {
   }
 }
 
-export function StoryPage({ page, isActive, className, overlayImageUrl }: StoryPageProps) {
+export function StoryPage({ page, isActive, className, childImageUrl }: StoryPageProps) {
   const animation: AnimationType = page.animation ?? 'fadeIn'
   const variant = animationVariants[animation]
+
+  const [overlayUrl, setOverlayUrl] = React.useState<string>()
+
+  React.useEffect(() => {
+    let cancelled = false
+    if (!page.imageUrl) {
+      setOverlayUrl(undefined)
+      return
+    }
+    createDalleOverlay(page.imageUrl)
+      .then((url) => {
+        if (!cancelled) setOverlayUrl(url)
+      })
+      .catch(() => setOverlayUrl(undefined))
+    return () => {
+      cancelled = true
+    }
+  }, [page.imageUrl])
 
   if (!isActive) return null
 
@@ -87,24 +106,24 @@ export function StoryPage({ page, isActive, className, overlayImageUrl }: StoryP
       <div className="flex-1 flex items-center justify-center mb-6 w-full max-w-md">
         {page.imageUrl ? (
           <div className="relative">
-            <motion.img
-              src={page.imageUrl}
-              alt={`Story illustration for: ${page.text}`}
-              className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-            />
-            {overlayImageUrl && (
+            {childImageUrl && (
               <motion.img
-                src={overlayImageUrl}
-                alt="overlay"
+                src={childImageUrl}
+                alt="child"
                 className="absolute inset-0 m-auto w-full h-full object-contain pointer-events-none"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               />
             )}
+            <motion.img
+              src={overlayUrl || page.imageUrl}
+              alt={`Story illustration for: ${page.text}`}
+              className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+            />
           </div>
         ) : (
           <motion.div
