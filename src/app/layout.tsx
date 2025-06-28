@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, M_PLUS_Rounded_1c } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const rounded = M_PLUS_Rounded_1c({
+  variable: "--font-rounded",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "動く絵本アプリ - 子ども向けアニメーション絵本",
-  description: "子どもの写真をアップロードして、その子が主人公の動くアニメーション付き絵本を自動生成するWebアプリです。",
+  title: "わくわくえほんパラダイス - みんなで作る動く絵本",
+  description:
+    "かわいいアニメーション付きのオリジナル絵本を簡単に作れるWebアプリです。",
 };
 
 export default function RootLayout({
@@ -25,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rounded.variable} antialiased`}
       >
         {children}
       </body>
