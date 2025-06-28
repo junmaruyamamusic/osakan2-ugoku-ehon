@@ -24,12 +24,12 @@ export async function POST(req: NextRequest) {
       model: 'dall-e-3',
       prompt,
       n: 1,
-      size: '1024x1024'
+      size: '512x512'
     })
 
-    const urls = (res.data ?? []).map(d => d.url)
+    const url = res.data?.[0]?.url
 
-    return NextResponse.json({ urls })
+    return NextResponse.json({ url })
   } catch (error) {
     console.error('generate-images error:', error)
     if (error instanceof OpenAI.APIError) {

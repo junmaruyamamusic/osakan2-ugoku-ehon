@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   }
 
   const openai = new OpenAI({ apiKey })
-  const prompt = `あなたは絵本作家です。次のキーワードから3~4文程度で子ども向けの短い絵本のあらすじを日本語で書いてください。キーワード: ${keywords}`
+  const prompt = `あなたは絵本作家です。次のキーワードから子ども向けの絵本のあらすじを3つのシーンに分けて日本語で書いてください。各シーンは1〜2文で番号付きで改行して出力してください。キーワード: ${keywords}`
 
   try {
     const completion = await openai.chat.completions.create({
@@ -28,8 +28,13 @@ export async function POST(req: NextRequest) {
       temperature: 0.7,
       max_tokens: 150
     })
-    const summary = completion.choices[0]?.message?.content?.trim() || ''
-    return NextResponse.json({ summary })
+    const raw = completion.choices[0]?.message?.content?.trim() || ''
+    const scenes = raw
+      .split('\n')
+      .map((line) => line.replace(/^\d+[\.\s]*/, '').trim())
+      .filter(Boolean)
+      .slice(0, 3)
+    return NextResponse.json({ scenes })
   } catch (error) {
     console.error('generate-summary error:', error)
     if (error instanceof OpenAI.APIError) {
