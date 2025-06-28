@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
       model: 'gpt-image-1',
       prompt,
       n: 1,
-      mode: 'image-to-image',
       image
     })
 
