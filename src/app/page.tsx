@@ -45,6 +45,8 @@ export default function HomePage() {
   const [logs, setLogs] = useState<string[]>([])
   const [croppedUrl, setCroppedUrl] = useState<string | null>(null)
   const [generatedStory, setGeneratedStory] = useState<Story | null>(null)
+  const [imageProgress, setImageProgress] = useState(0)
+  const [imageTotal, setImageTotal] = useState(0)
   const addLog = useCallback((msg: string) => {
     setLogs(prev => [...prev, msg])
     console.log(msg)
@@ -113,10 +115,13 @@ export default function HomePage() {
 
     addLog('画像生成リクエストを送信します')
     setIsGenerating(true)
+
     const lines = storyText.split('\n').filter(Boolean)
     const urls: string[] = []
+    setImageTotal(lines.length)
+    setImageProgress(0)
 
-    for (const line of lines) {
+    for (const [index, line] of lines.entries()) {
       const formData = new FormData()
       formData.append('image', uploadedImages.child)
       formData.append('story', line)
@@ -129,7 +134,8 @@ export default function HomePage() {
         })
       } catch (error) {
         addLog(`リクエストエラー: ${String(error)}`)
-        break
+        setIsGenerating(false)
+        return
       }
 
       addLog(`サーバーからの応答: ${res.status}`)
@@ -141,14 +147,17 @@ export default function HomePage() {
         } catch {
           addLog('不明なエラーが発生しました')
         }
-        break
+        setIsGenerating(false)
+        return
       }
 
       const data = await res.json()
       if (data.url) {
         urls.push(data.url)
+        setImageProgress(index + 1)
       }
     }
+    setImageProgress(lines.length)
 
     const id = Date.now().toString()
     const pages = lines.map((text, i) => ({
@@ -225,7 +234,9 @@ export default function HomePage() {
         disabled={isGenerating}
         className="mb-6 rounded-lg bg-purple-500 px-6 py-3 text-lg text-white disabled:opacity-60"
       >
-        {isGenerating ? '生成中...' : '絵本を生成'}
+        {isGenerating
+          ? `生成中... (${imageProgress}/${imageTotal})`
+          : '絵本を生成'}
       </button>
 
       <div className="mb-8">
