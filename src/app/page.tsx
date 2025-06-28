@@ -99,7 +99,8 @@ export default function HomePage() {
     }
 
     const data = await res.json()
-    setStoryText(data.summary || '')
+    const scenes: string[] = data.scenes || []
+    setStoryText(scenes.join('\n'))
     addLog('あらすじを生成しました')
     setIsSummarizing(false)
   }, [keywords, addLog])
@@ -112,43 +113,48 @@ export default function HomePage() {
 
     addLog('画像生成リクエストを送信します')
     setIsGenerating(true)
-    const formData = new FormData()
-    formData.append('image', uploadedImages.child)
-    formData.append('story', storyText)
-
-    let res: Response
-    try {
-      res = await fetch('/api/generate-images', {
-        method: 'POST',
-        body: formData
-      })
-    } catch (error) {
-      addLog(`リクエストエラー: ${String(error)}`)
-      setIsGenerating(false)
-      return
-    }
-
-    addLog(`サーバーからの応答: ${res.status}`)
-
-    if (!res.ok) {
-      try {
-        const data = await res.json()
-        addLog(`エラー: ${data.error || res.statusText}`)
-      } catch {
-        addLog('不明なエラーが発生しました')
-      }
-      setIsGenerating(false)
-      return
-    }
-
-    const data = await res.json()
-    const urls: string[] = data.urls || []
     const lines = storyText.split('\n').filter(Boolean)
+    const urls: string[] = []
+
+    for (const line of lines) {
+      const formData = new FormData()
+      formData.append('image', uploadedImages.child)
+      formData.append('story', line)
+
+      let res: Response
+      try {
+        res = await fetch('/api/generate-images', {
+          method: 'POST',
+          body: formData
+        })
+      } catch (error) {
+        addLog(`リクエストエラー: ${String(error)}`)
+        break
+      }
+
+      addLog(`サーバーからの応答: ${res.status}`)
+
+      if (!res.ok) {
+        try {
+          const data = await res.json()
+          addLog(`エラー: ${data.error || res.statusText}`)
+        } catch {
+          addLog('不明なエラーが発生しました')
+        }
+        break
+      }
+
+      const data = await res.json()
+      if (data.url) {
+        urls.push(data.url)
+      }
+    }
+
     const id = Date.now().toString()
-    const pages = urls.map((url, i) => ({
+    const pages = lines.map((text, i) => ({
       id: `${id}-${i}`,
-      text: lines[i] || '',
-      imageUrl: url,
+      text,
+      imageUrl: urls[i],
       animation: 'fadeIn' as const
     }))
 
@@ -209,8 +215,8 @@ export default function HomePage() {
       <textarea
         value={storyText}
         onChange={(e) => setStoryText(e.target.value)}
-        rows={1}
-        placeholder="1行の物語を入力してください"
+        rows={3}
+        placeholder="3つのシーンのあらすじが表示されます"
         className="mb-4 w-full max-w-md rounded-lg border p-2"
       />
 
