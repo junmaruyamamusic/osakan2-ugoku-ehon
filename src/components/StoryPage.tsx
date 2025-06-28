@@ -125,7 +125,7 @@ export function StoryPage({ page, isActive, className, overlayImageUrl }: StoryP
 
       {/* Text Area */}
       <motion.div
-        className="w-full max-w-lg"
+        className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.4 }}
