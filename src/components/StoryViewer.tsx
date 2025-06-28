@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress'
 import { StoryPage } from '@/components/StoryPage'
 import { useStore } from '@/store/useStore'
 import { cn } from '@/lib/utils'
+import { createCompositeImage } from '@/lib/image'
 
 interface StoryViewerProps {
   className?: string
@@ -23,16 +24,23 @@ export function StoryViewer({ className }: StoryViewerProps) {
     uploadedImages
   } = useStore()
 
-  const overlayImageUrl = React.useMemo(() => {
-    if (!uploadedImages.child) return undefined
-    return URL.createObjectURL(uploadedImages.child)
-  }, [uploadedImages.child])
+  const [overlayImageUrl, setOverlayImageUrl] = React.useState<string>()
 
   React.useEffect(() => {
-    return () => {
-      if (overlayImageUrl) URL.revokeObjectURL(overlayImageUrl)
+    let cancelled = false
+    if (!uploadedImages.child) {
+      setOverlayImageUrl(undefined)
+      return
     }
-  }, [overlayImageUrl])
+    createCompositeImage(uploadedImages.child)
+      .then((url) => {
+        if (!cancelled) setOverlayImageUrl(url)
+      })
+      .catch(() => setOverlayImageUrl(undefined))
+    return () => {
+      cancelled = true
+    }
+  }, [uploadedImages.child])
 
   if (!currentStory) {
     return (
